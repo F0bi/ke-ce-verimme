@@ -5,7 +5,7 @@ from http.server import HTTPServer, CGIHTTPRequestHandler
 summaryPageName = 'freeTV.html'
 urlsToScrape = {
     'staseraInTvURL': 'https://www.staseraintv.com',
-    'cb01URL': 'https://cb01.builders'
+    'cb01URL': 'https://cb01.builder'
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
 
