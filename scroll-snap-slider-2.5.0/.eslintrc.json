@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:compat/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  }
+}

@@ -58,7 +58,7 @@ cb01Scraper.start(summaryPageFile, urlsToScrape['cb01URL'], numberOfPagesToAnaly
 # add here other web site scraper
 closeSummaryFile(summaryPageFile)
 
-webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
+webbrowser.open('http://127.0.0.1:3600/' + 'test.html') #summaryPageName)
 
 # A thread continues to exist as long as the application continues to run, 
 # in the case webbrowser.open_new() is not blocking so the browser 
