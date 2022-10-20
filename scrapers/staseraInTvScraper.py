@@ -1,5 +1,11 @@
 import requests, bs4, os
 
+# scraper final dictionary
+result = {
+    'primaSerata': [],
+    'secondaSerata': []
+} 
+
 def getStaseraInTvWebPageRawData(pageUrl, pageIndex):
     if (pageIndex == 0): newChar = '' 
     else: newChar = str(pageIndex + 1)
@@ -87,30 +93,36 @@ def cleanImgs(rawFilmImgs, staseraInTvBaseURL):
     # print('cleaned imgs: ', filmImgs)    
     return filmImgs    
 
-# add data to summary html page
-def addToSummaryPage(currentPageURL, staseraInTv1SerataURL, pageIndex, filmTitles, filmTimes, filmChannelsNames, filmChannelsNumbers, filmImgs, summaryPageFile):
-  
-    if (currentPageURL == staseraInTv1SerataURL): 
-        if (pageIndex == 0):
-            siteRowStr = "<tr><th colspan='5' style='background-color:green'>Stasera in TV</th></tr><tr><th colspan='5'>Prima serata</th></tr>"
-        else: 
-            siteRowStr = ""
-    elif (pageIndex == 0):
-        siteRowStr = "<tr><th colspan='5'>Seconda serata</th></tr>"
-    else: siteRowStr = ""
-
+# add data to scraper final dictionary
+def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, filmChannelsNames, filmChannelsNumbers, filmImgs):
     for i in range(len(filmTitles)):
-        filmRowStr = "<tr style='background-color:B1E8B2'><td><img src=" + filmImgs[i] + "></td><td>" + filmTitles[i] + "</td><td>" + filmTimes[i] + "</td><td>" + filmChannelsNames[i] + "</td><td>" + filmChannelsNumbers[i] + "</td></tr>"
-        siteRowStr = siteRowStr + filmRowStr
- 
-    summaryPageFile.write(siteRowStr)
+        if (currentPageURL == staseraInTv1SerataURL):
+            primaSerataItem = {
+                'filmImg': filmImgs[i],
+                'filmTitle': filmTitles[i],
+                'filmTime': filmTimes[i],
+                'filmChannelName': filmChannelsNames[i],
+                'filmChannelsNumber': filmChannelsNumbers[i]
+            } 
+            result['primaSerata'].append(primaSerataItem)
+        else:
+            secondaSerataItem = {
+                'filmImg': filmImgs[i],
+                'filmTitle': filmTitles[i],
+                'filmTime': filmTimes[i],
+                'filmChannelName': filmChannelsNames[i],
+                'filmChannelsNumber': filmChannelsNumbers[i]
+            } 
+            result['secondaSerata'].append(secondaSerataItem)
+    # print('RESULT: ', result)      
+    return result
 
 # start
-def start(summaryPageFile, staseraInTvBaseURL, numberOfPagesToAnalyze):
+def start(staseraInTvBaseURL, numberOfPagesToAnalyze):
     # modify base url for iteration on every page
     staseraInTv1SerataURL = staseraInTvBaseURL + '/index@.html'
     staseraInTv2SerataURL = staseraInTvBaseURL + '/seconda_serata_stasera@.html'
-    
+
     # iteration on every page
     for serataIndex in range(2):
         if (serataIndex == 0): currentStaseraInTvURL = staseraInTv1SerataURL
@@ -122,14 +134,15 @@ def start(summaryPageFile, staseraInTvBaseURL, numberOfPagesToAnalyze):
             filmTitles = cleanTitles(rawWebPageData['rawFilmTitles'])
             filmTimes = cleanTimes(rawWebPageData['rawFilmTimes'])
             filmImgs = cleanImgs(rawWebPageData['rawFilmImgs'], staseraInTvBaseURL)
-            addToSummaryPage(
+            addToResult(
                 currentStaseraInTvURL, 
-                staseraInTv1SerataURL, 
-                pageIndex, 
+                staseraInTv1SerataURL,  
                 filmTitles, 
                 filmTimes, 
                 filmChannelsNames, 
                 filmChannelsNumbers,
-                filmImgs,
-                summaryPageFile
+                filmImgs
             )
+    # print('RESULT: ', result)
+    return result 
+    
