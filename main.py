@@ -21,7 +21,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult):
         # print('primaSerataItem: ', primaSerataItem)
         doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index1Serata) +"'><img height='300' src=" + primaSerataItem['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index1Serata+1) + "'><article><p><b>" + primaSerataItem['filmTitle'] + "</b></p><p>descrizione</p><p>" + primaSerataItem['filmTime'] + "</p><p>" + primaSerataItem['filmChannelName'] + "</p><p>" + primaSerataItem['filmChannelsNumber'] + "</p></article></li>"
         htmlPageStaseraInTv1SerataContentBody = htmlPageStaseraInTv1SerataContentBody + doubleLiTag
-        index1Serata = index1Serata + 1
+        index1Serata = index1Serata + 2
     htmlPageStaseraInTv1SerataContentBody = htmlPageStaseraInTv1SerataContentBody + "</ul>"
     htmlPageStaseraInTv2SerataBody = "<h3>Seconda serata</h3><ul class='scroll-snap-slider -multi'>"
     htmlPageStaseraInTv2SerataContentBody = ""
@@ -30,7 +30,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult):
         # print('secondaSerataItem: ', secondaSerataItem)
         doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index2Serata) +"'><img height='300' src=" + secondaSerataItem['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index2Serata+1) + "'><article><p><b>" + secondaSerataItem['filmTitle'] + "</b></p><p>descrizione</p><p>" + secondaSerataItem['filmTime'] + "</p><p>" + secondaSerataItem['filmChannelName'] + "</p><p>" + secondaSerataItem['filmChannelsNumber'] + "</p></article></li>"
         htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + doubleLiTag
-        index2Serata = index2Serata + 1
+        index2Serata = index2Serata + 2
     htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + "</ul></section>"
     htmlPageCloseTags = "</div></body></html>"
 
