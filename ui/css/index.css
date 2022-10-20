@@ -1,0 +1,39 @@
+@import "./page.css";
+@import "./feature_toggle.css";
+@import "./scroll-snap-slider.css";
+
+.scroll-snap-slider {
+  height: 300px;
+  margin: 1rem auto;
+  box-sizing: border-box;
+}
+
+.scroll-snap-slider.-multi {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.scroll-snap-slider .scroll-snap-slide {
+  width: 400px;
+  scroll-snap-align: start;
+}
+
+.scroll-snap-slider .scroll-snap-slide.-text {
+  background: #181818;
+  color: #ffffff;
+}
+
+.scroll-snap-slider img {
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.features {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: auto;
+}

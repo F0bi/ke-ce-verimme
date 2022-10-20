@@ -1,5 +1,5 @@
 from warnings import catch_warnings
-import requests, staseraInTvScraper, cb01Scraper, webbrowser, os, _thread, time, sys
+import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, webbrowser, os, _thread, time, sys
 from http.server import HTTPServer, CGIHTTPRequestHandler
 
 summaryPageName = 'freeTV.html'
@@ -58,7 +58,7 @@ cb01Scraper.start(summaryPageFile, urlsToScrape['cb01URL'], numberOfPagesToAnaly
 # add here other web site scraper
 closeSummaryFile(summaryPageFile)
 
-webbrowser.open('http://127.0.0.1:3600/' + 'test.html') #summaryPageName)
+webbrowser.open('http://127.0.0.1:3600/' + 'ui/test.html') #summaryPageName)
 
 # A thread continues to exist as long as the application continues to run, 
 # in the case webbrowser.open_new() is not blocking so the browser 

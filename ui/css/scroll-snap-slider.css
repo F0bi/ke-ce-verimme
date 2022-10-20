@@ -18,7 +18,7 @@
 }
 
 .scroll-snap-slide {
-  align-items: center;
+  align-items: left;
   display: flex;
   flex: 0 0 auto;
   flex-direction: column;
