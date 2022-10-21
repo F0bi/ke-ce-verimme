@@ -1,5 +1,8 @@
 import requests, bs4, os
 
+# scraper final list
+result = []
+
 def getCb01WebPageRawData(pageUrl, pageIndex):
     # set web page url
     newChar = str(pageIndex + 1)
@@ -80,23 +83,23 @@ def cleanImgs(rawFilmImgs):
     return filmImgs
 
 # add data to summary html page
-def addToSummaryPage(currentPageURL, pageIndex, filmTitles, filmDescriptions, filmInfos, filmLinks, filmImgs, summaryPageFile):
-    if (pageIndex == 0):
-        strTable = "<tr><th colspan='5' style='background-color:blue'>CB01</th></tr>"
-    else: 
-        strTable = ""
-
+def addToResult(filmTitles, filmDescriptions, filmInfos, filmLinks, filmImgs):
     for i in range(len(filmTitles)):
         if (filmTitles[i] != 'deleted'):
-            strRW = "<tr style='background-color:87CEFA'><td><img src=" + filmImgs[i] + " width='115' heght='153'></td><td>" + filmTitles[i] + "</td><td>" + filmInfos[i] + "</td><td>" + filmDescriptions[i] + "</td><td><a href='" + filmLinks[i] + "'>link</a></td></tr>"
-            strTable = strTable + strRW
-        else:
-            continue    
- 
-    summaryPageFile.write(strTable.strip())
+            cb01Item = {
+                'filmImg': filmImgs[i],
+                'filmTitle': filmTitles[i],
+                'filmInfo': filmInfos[i],
+                'filmDescription': filmDescriptions[i],
+                'filmLinks': filmLinks[i]
+            }
+            result.append(cb01Item)
+        else: 
+            continue
+    print('RESULT: ', result)  
 
 # start
-def start(summaryPageFile, cb01BaseURL, numberOfPagesToAnalyze):
+def start(cb01BaseURL, numberOfPagesToAnalyze):
 
     # modify base url for iteration on every page
     cb01URL = cb01BaseURL + '/page/@/'
@@ -109,13 +112,12 @@ def start(summaryPageFile, cb01BaseURL, numberOfPagesToAnalyze):
         filmDescriptions = rawWebPageData['rawFilmDescriptions']
         filmLinks = rawWebPageData['rawFilmLinks']
         filmImgs = cleanImgs(rawWebPageData['rawFilmImgs'])
-        addToSummaryPage(
-            cb01URL, 
-            pageIndex, 
+        addToResult(
             filmTitles, 
             filmDescriptions, 
             filmInfos, 
             filmLinks,
-            filmImgs,
-            summaryPageFile
+            filmImgs
         )
+    # print('RESULT: ', result)    
+    return result     

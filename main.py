@@ -9,7 +9,7 @@ urlsToScrape = {
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
 
-def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult):
+def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult):
     htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
     htmlPageStartBody = "<body><div class='container'>"
     
@@ -32,51 +32,27 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult):
         htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + doubleLiTag
         index2Serata = index2Serata + 2
     htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + "</ul></section>"
-    htmlPageCloseTags = "</div></body></html>"
-
-    finalHtmlPageTags = htmlPageHead + htmlPageStartBody + htmlPageStaseraInTv1SerataBody + htmlPageStaseraInTv1SerataContentBody + htmlPageStaseraInTv2SerataBody + htmlPageStaseraInTv2SerataContentBody + htmlPageCloseTags
     
     # cb01 section
-    """
-    <section class="column" aria-labelledby="multiple-heading">
-      <hr>
-      <h2 id="multiple-heading">CB01</h2>
-      <hr>
-      <ul class="scroll-snap-slider -multi">
-        <li class="scroll-snap-slide" data-index="0">
-          <img alt="pug in a blanket" height="300" src="https://picsum.photos/id/1025/400/" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="1">
-          <img alt="cat's nose up close" height="300" src="https://picsum.photos/id/40/400/300" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="2">
-          <article>
-            <h4>This one is just text</h4>
-            <p>Lorem ipsum and all that stuff.</p>
-          </article>
-        </li>
-        <li class="scroll-snap-slide" data-index="3">
-          <img alt="same pug in another blanket" height="300" src="https://picsum.photos/id/1062/400/300" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="4">
-          <img alt="cute puppy eyes" height="300" src="https://picsum.photos/id/237/400/300" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="5">
-          <img alt="cute puppy eyes" height="300" src="https://picsum.photos/id/238/400/300" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="6">
-          <img alt="cute puppy eyes" height="300" src="https://picsum.photos/id/239/400/300" width="400">
-        </li>
-        <li class="scroll-snap-slide" data-index="7">
-          <img alt="cute puppy eyes" height="300" src="https://picsum.photos/id/240/400/300" width="400">
-        </li>
-      </ul>
-    </section>
-  </div>
-</body>
-</html>
-"""
+    htmlPageCb01Body = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>CB01</h2><hr><ul class='scroll-snap-slider -multi'>"
+    htmlPageCb01ContentBody = ""
+    index = 0
+    for cb01Item in cb01ScraperResult:
+        # print('cb01Item: ', cb01Item)
+        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + cb01Item['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + cb01Item['filmTitle'] + "</b></p><p>" + cb01Item['filmInfo'] + "</p><p>" + cb01Item['filmDescription'] + "</p><p>" + cb01Item['filmLinks'] + "</p></article></li>"
+        htmlPageCb01ContentBody = htmlPageCb01ContentBody + doubleLiTag
+        index = index + 2
+    htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
     
+    # add here other sections
+
+    # html page body closing
+    htmlPageCloseTags = "</div></body></html>"
+
+    # final html page composition
+    finalHtmlPageTags = htmlPageHead + htmlPageStartBody + htmlPageStaseraInTv1SerataBody + htmlPageStaseraInTv1SerataContentBody + htmlPageStaseraInTv2SerataBody + htmlPageStaseraInTv2SerataContentBody + htmlPageCb01Body + htmlPageCb01ContentBody + htmlPageCloseTags
+    
+    # html file management
     file = open(summaryPageName, 'a', encoding="utf-8")
     file.write(finalHtmlPageTags)
     file.close()
@@ -113,10 +89,10 @@ except OSError:
 _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
-# cb01Scraper.start(summaryPageFile, urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
+cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
 # add here other web site scraper
 
-summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult)
+summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
 webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
