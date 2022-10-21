@@ -59,6 +59,7 @@ p {
   text-align: left;
   color: white;
   margin-inline-start: 10px;
+  margin-inline-end: 10px;
 }
 
 hr {
