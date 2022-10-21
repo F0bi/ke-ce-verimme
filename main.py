@@ -39,7 +39,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     index = 0
     for cb01Item in cb01ScraperResult:
         # print('cb01Item: ', cb01Item)
-        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + cb01Item['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + cb01Item['filmTitle'] + "</b></p><p>" + cb01Item['filmInfo'] + "</p><p>" + cb01Item['filmDescription'] + "</p><p>" + cb01Item['filmLinks'] + "</p></article></li>"
+        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + cb01Item['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + cb01Item['filmTitle'] + "</b></p><p>" + cb01Item['filmInfo'] + "</p><p>" + cb01Item['filmDescription'] + "</p><p><a href='" + cb01Item['filmLinks'] + "'>link</a></p></article></li>"
         htmlPageCb01ContentBody = htmlPageCb01ContentBody + doubleLiTag
         index = index + 2
     htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
