@@ -42,7 +42,7 @@ def getCb01WebPageRawData(pageUrl, pageIndex):
     # print('rawFilmTitles: ', finalRawFilmTitles)
     # print('rawFilmLinks: ', rawFilmLinks)
     # print('rawFilmDescriptions: ', finalRawFilmDescriptions) 
-    print('rawFilmImgs: ', rawFilmImgs) 
+    # print('rawFilmImgs: ', rawFilmImgs) 
 
     return {  
         'rawFilmInfos': rawFilmInfos, 
@@ -96,7 +96,7 @@ def addToResult(filmTitles, filmDescriptions, filmInfos, filmLinks, filmImgs):
             result.append(cb01Item)
         else: 
             continue
-    print('RESULT: ', result)  
+    #print('RESULT: ', result)  
 
 # start
 def start(cb01BaseURL, numberOfPagesToAnalyze):

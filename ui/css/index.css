@@ -3,7 +3,7 @@
 @import "./scroll-snap-slider.css";
 
 .scroll-snap-slider {
-  height: 300px;
+  height: 600px;
   margin: 1rem auto;
   box-sizing: border-box;
 }
@@ -14,7 +14,7 @@
 }
 
 .scroll-snap-slider .scroll-snap-slide {
-  width: 220px;
+  width: 350px;
   scroll-snap-align: start;
 }
 

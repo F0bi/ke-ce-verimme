@@ -47,19 +47,22 @@ h2 {
   text-align: center;
   color: white;
   margin: 0px;
+  font-size: 50px;
 }
 
 h3 {
   text-align: left;
   color: white;
   margin: 0px;
+  font-size: 30px;
 }
 
 p {
   text-align: left;
   color: white;
-  margin-inline-start: 10px;
-  margin-inline-end: 10px;
+  margin-inline-start: 15px;
+  margin-inline-end: 15px;
+  font-size: 27px;
 }
 
 hr {
