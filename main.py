@@ -1,25 +1,61 @@
 from warnings import catch_warnings
-import requests, staseraInTvScraper, cb01Scraper, webbrowser, os, _thread, time, sys
+import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, webbrowser, os, _thread, time, sys
 from http.server import HTTPServer, CGIHTTPRequestHandler
 
-summaryPageName = 'freeTV.html'
+summaryPageName = 'index.html'
 urlsToScrape = {
     'staseraInTvURL': 'https://www.staseraintv.com',
     'cb01URL': 'https://cb01.marketing'
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
 
-def createAndOpenSummaryFile(summaryPageName):
-    strStyle = "<style>th, td {border: 1px solid black; border-radius: 10px; text-align:center; padding-left: 5px; padding-right: 5px;}</style>"
-    strTable = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head>" + strStyle + "<table>"
-    file = open(summaryPageName, 'a', encoding="utf-8")
-    file.write(strTable)
-    return file
+def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult):
+    htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
+    htmlPageStartBody = "<body><div class='container'>"
+    
+    # stasera in tv section
+    htmlPageStaseraInTv1SerataBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>Stasera in TV</h2><hr><h3>Prima serata</h3><ul class='scroll-snap-slider -multi'>"
+    htmlPageStaseraInTv1SerataContentBody = ""
+    index1Serata = 0
+    for primaSerataItem in staseraInTvScraperResult['primaSerata']:
+        # print('primaSerataItem: ', primaSerataItem)
+        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index1Serata) +"'><img height='300' src=" + primaSerataItem['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index1Serata+1) + "'><article><p><b>" + primaSerataItem['filmTitle'] + "</b></p><p>" + primaSerataItem['filmDescription'] + "</p><p>" + primaSerataItem['filmTime'] + "</p><p>" + primaSerataItem['filmChannelName'] + "</p><p>" + primaSerataItem['filmChannelsNumber'] + "</p></article></li>"
+        htmlPageStaseraInTv1SerataContentBody = htmlPageStaseraInTv1SerataContentBody + doubleLiTag
+        index1Serata = index1Serata + 2
+    htmlPageStaseraInTv1SerataContentBody = htmlPageStaseraInTv1SerataContentBody + "</ul>"
+    htmlPageStaseraInTv2SerataBody = "<h3>Seconda serata</h3><ul class='scroll-snap-slider -multi'>"
+    htmlPageStaseraInTv2SerataContentBody = ""
+    index2Serata = 0
+    for secondaSerataItem in staseraInTvScraperResult['secondaSerata']:
+        # print('secondaSerataItem: ', secondaSerataItem)
+        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index2Serata) +"'><img height='300' src=" + secondaSerataItem['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index2Serata+1) + "'><article><p><b>" + secondaSerataItem['filmTitle'] + "</b></p><p>" + secondaSerataItem['filmDescription'] + "</p><p>" + secondaSerataItem['filmTime'] + "</p><p>" + secondaSerataItem['filmChannelName'] + "</p><p>" + secondaSerataItem['filmChannelsNumber'] + "</p></article></li>"
+        htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + doubleLiTag
+        index2Serata = index2Serata + 2
+    htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + "</ul></section>"
+    
+    # cb01 section
+    htmlPageCb01Body = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>CB01</h2><hr><ul class='scroll-snap-slider -multi'>"
+    htmlPageCb01ContentBody = ""
+    index = 0
+    for cb01Item in cb01ScraperResult:
+        # print('cb01Item: ', cb01Item)
+        doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + cb01Item['filmImg'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + cb01Item['filmTitle'] + "</b></p><p>" + cb01Item['filmInfo'] + "</p><p>" + cb01Item['filmDescription'] + "</p><p><a href='" + cb01Item['filmLinks'] + "'>link</a></p></article></li>"
+        htmlPageCb01ContentBody = htmlPageCb01ContentBody + doubleLiTag
+        index = index + 2
+    htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
+    
+    # add here other sections
 
-def closeSummaryFile(summaryPageFile):
-    strTable = "</table></html>"
-    summaryPageFile.write(strTable)
-    summaryPageFile.close()
+    # html page body closing
+    htmlPageCloseTags = "</div></body></html>"
+
+    # final html page composition
+    finalHtmlPageTags = htmlPageHead + htmlPageStartBody + htmlPageStaseraInTv1SerataBody + htmlPageStaseraInTv1SerataContentBody + htmlPageStaseraInTv2SerataBody + htmlPageStaseraInTv2SerataContentBody + htmlPageCb01Body + htmlPageCb01ContentBody + htmlPageCloseTags
+    
+    # html file management
+    file = open(summaryPageName, 'a', encoding="utf-8")
+    file.write(finalHtmlPageTags)
+    file.close()
 
 def start_server():    
     # Make sure the server is created at current directory
@@ -52,11 +88,11 @@ except OSError:
 
 _thread.start_new_thread(start_server,())
 
-summaryPageFile = createAndOpenSummaryFile(summaryPageName)
-staseraInTvScraper.start(summaryPageFile, urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
-cb01Scraper.start(summaryPageFile, urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
+staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
+cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
 # add here other web site scraper
-closeSummaryFile(summaryPageFile)
+
+summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
 webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
