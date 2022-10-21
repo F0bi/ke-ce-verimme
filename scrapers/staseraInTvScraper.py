@@ -27,19 +27,22 @@ def getStaseraInTvWebPageRawData(pageUrl, pageIndex):
     rawFilmTimes = filmsContainer.find_all('big')
     rawFilmTitles = filmsContainer.find_all('span')
     rawFilmImgs = filmsContainer.find_all('small')
+    rawFilmDescriptions = filmsContainer.find_all('th', class_='prgpreviewtext')
     
     # print('rawFilmChannelsNames: ', rawFilmChannelsNames)
     # print('rawFilmChannelsNumbers: ', rawFilmChannelsNumbers)
     # print('rawFilmTimes: ', rawFilmTimes)
     # print('rawFilmTitles: ', rawFilmTitles)
     # print('rawFilmImgs: ', rawFilmImgs)
+    # print('rawFilmDescriptions: ', rawFilmDescriptions)
 
     return { 
         'rawFilmChannelsNames': rawFilmChannelsNames, 
         'rawFilmChannelsNumbers': rawFilmChannelsNumbers, 
         'rawFilmTimes': rawFilmTimes, 
         'rawFilmTitles': rawFilmTitles,
-        'rawFilmImgs': rawFilmImgs
+        'rawFilmImgs': rawFilmImgs,
+        'rawFilmDescriptions': rawFilmDescriptions
     }
 
 # channels names cleaning
@@ -93,8 +96,16 @@ def cleanImgs(rawFilmImgs, staseraInTvBaseURL):
     # print('cleaned imgs: ', filmImgs)    
     return filmImgs    
 
+# descriptions cleaning
+def cleanDescriptions(rawFilmDescriptions):
+    filmDescriptions = []
+    for description in rawFilmDescriptions:
+        filmDescriptions.append(description.text.strip())
+    # print('CLEAN DESCRIPRIONS: ', filmDescriptions)
+    return filmDescriptions
+
 # add data to scraper final dictionary
-def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, filmChannelsNames, filmChannelsNumbers, filmImgs):
+def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, filmChannelsNames, filmChannelsNumbers, filmImgs, filmDescriptions):
     for i in range(len(filmTitles)):
         if (currentPageURL == staseraInTv1SerataURL):
             primaSerataItem = {
@@ -102,7 +113,8 @@ def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, fi
                 'filmTitle': filmTitles[i],
                 'filmTime': filmTimes[i],
                 'filmChannelName': filmChannelsNames[i],
-                'filmChannelsNumber': filmChannelsNumbers[i]
+                'filmChannelsNumber': filmChannelsNumbers[i],
+                'filmDescription': filmDescriptions[i]
             } 
             result['primaSerata'].append(primaSerataItem)
         else:
@@ -111,7 +123,8 @@ def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, fi
                 'filmTitle': filmTitles[i],
                 'filmTime': filmTimes[i],
                 'filmChannelName': filmChannelsNames[i],
-                'filmChannelsNumber': filmChannelsNumbers[i]
+                'filmChannelsNumber': filmChannelsNumbers[i],
+                'filmDescription': filmDescriptions[i]
             } 
             result['secondaSerata'].append(secondaSerataItem)
     # print('RESULT: ', result)      
@@ -134,6 +147,7 @@ def start(staseraInTvBaseURL, numberOfPagesToAnalyze):
             filmTitles = cleanTitles(rawWebPageData['rawFilmTitles'])
             filmTimes = cleanTimes(rawWebPageData['rawFilmTimes'])
             filmImgs = cleanImgs(rawWebPageData['rawFilmImgs'], staseraInTvBaseURL)
+            filmDescriptions = cleanDescriptions(rawWebPageData['rawFilmDescriptions'])
             addToResult(
                 currentStaseraInTvURL, 
                 staseraInTv1SerataURL,  
@@ -141,7 +155,8 @@ def start(staseraInTvBaseURL, numberOfPagesToAnalyze):
                 filmTimes, 
                 filmChannelsNames, 
                 filmChannelsNumbers,
-                filmImgs
+                filmImgs,
+                filmDescriptions
             )
     # print('RESULT: ', result)
     return result 
