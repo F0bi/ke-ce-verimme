@@ -1,13 +1,30 @@
 from warnings import catch_warnings
-import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, webbrowser, os, _thread, time, sys
+import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, scrapers.justwatchScraper as justwatchScraper, webbrowser, os, _thread, time, sys
 from http.server import HTTPServer, CGIHTTPRequestHandler
 
 summaryPageName = 'index.html'
-urlsToScrape = {
-    'staseraInTvURL': 'https://www.staseraintv.com',
-    'cb01URL': 'https://cb01.tours'
+scrapersSetting = {
+    'staseraInTv': {
+        'url': 'https://www.staseraintv.com',
+        'numberOfPagesToAnalyze': 3, # first 3 pages
+    },
+    'cb01': {
+        'url': 'https://cb01.tours',
+        'numberOfPagesToAnalyze': 3, # first 3 pages
+    },
+    'justwatch': {
+        'url': 'https://www.justwatch.com',
+        'providersIdentifierToAnalyze': ['Netflix', 'Amazon Prime Video', 'Sky Go', 'Paramount Plus', 'Rai Play', 'Infinity'],
+        'providersQueryParams': ['nfx', 'prv', 'skg', 'pmp', 'rai', 'inf'],
+        'comedyQueryParams': ['cmy', 'eur', 'fml', 'rma'],
+        'actionAndAdventureQueryParams': ['act'],
+        'historicalAndWarQueryParams': ['hst', 'war'],
+        'crimeAndThrillerQueryParams': ['crm', 'trl'],
+        'scifiQueryParams': ['scf'],
+        'horrorQueryParams': ['hrr'],
+        'fantasyQueryParams': ['fnt']
+    }
 }
-numberOfPagesToAnalyze = 3 # first 3 pages
 
 def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult):
     htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
@@ -75,10 +92,10 @@ def isUrlReachable(url):
 # START
 
 # check reachability of URLs of each page to scrape
-for url in urlsToScrape.keys():
-    while not isUrlReachable(urlsToScrape[url]):
-        print('l\'indirizzo %s' % (urlsToScrape[url]), 'potrebbe essere cambiato/errato, controllalo e reinserisci quello corretto: ') 
-        urlsToScrape[url] = str(input())
+for scraper in scrapersSetting.keys():
+    while not isUrlReachable(scrapersSetting[scraper]['url']):
+        print('l\'indirizzo %s' % (scrapersSetting[scraper]['url']), 'potrebbe essere cambiato/errato, controllalo e reinserisci quello corretto: ') 
+        scrapersSetting[scraper]['url'] = str(input())
 
 # remove summary page file if It already exists
 try:
@@ -88,8 +105,9 @@ except OSError:
 
 _thread.start_new_thread(start_server,())
 
-staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
-cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
+staseraInTvScraperResult = staseraInTvScraper.start(scrapersSetting['staseraInTv'])
+cb01ScraperResult = cb01Scraper.start(scrapersSetting['cb01'])
+justwatchScraperResult = justwatchScraper.start(scrapersSetting['justwatch']) 
 # add here other web site scraper
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)

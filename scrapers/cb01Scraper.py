@@ -99,11 +99,12 @@ def addToResult(filmTitles, filmDescriptions, filmInfos, filmLinks, filmImgs):
     #print('RESULT: ', result)  
 
 # start
-def start(cb01BaseURL, numberOfPagesToAnalyze):
-
+def start(cb01ScaperSettings):
+    # extract scraper settings
+    cb01BaseURL = cb01ScaperSettings['url']
+    numberOfPagesToAnalyze = cb01ScaperSettings['numberOfPagesToAnalyze']
     # modify base url for iteration on every page
     cb01URL = cb01BaseURL + '/page/@/'
-
     # iteration on every page
     for pageIndex in range(numberOfPagesToAnalyze):
         rawWebPageData = getCb01WebPageRawData(cb01URL, pageIndex)

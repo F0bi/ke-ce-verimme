@@ -131,7 +131,10 @@ def addToResult(currentPageURL, staseraInTv1SerataURL, filmTitles, filmTimes, fi
     return result
 
 # start
-def start(staseraInTvBaseURL, numberOfPagesToAnalyze):
+def start(staseraInTvScaperSettings):
+    # extract scraper settings
+    staseraInTvBaseURL = staseraInTvScaperSettings['url']
+    numberOfPagesToAnalyze = staseraInTvScaperSettings['numberOfPagesToAnalyze']
     # modify base url for iteration on every page
     staseraInTv1SerataURL = staseraInTvBaseURL + '/index@.html'
     staseraInTv2SerataURL = staseraInTvBaseURL + '/seconda_serata_stasera@.html'
