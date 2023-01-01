@@ -14,15 +14,16 @@ scrapersSetting = {
     },
     'justwatch': {
         'url': 'https://www.justwatch.com',
-        'providersIdentifierToAnalyze': ['Netflix', 'Amazon Prime Video', 'Sky Go', 'Paramount Plus', 'Rai Play', 'Infinity'],
-        'providersQueryParams': ['nfx', 'prv', 'skg', 'pmp', 'rai', 'inf'],
-        'comedyQueryParams': ['cmy', 'eur', 'fml', 'rma'],
-        'actionAndAdventureQueryParams': ['act'],
-        'historicalAndWarQueryParams': ['hst', 'war'],
-        'crimeAndThrillerQueryParams': ['crm', 'trl'],
-        'scifiQueryParams': ['scf'],
-        'horrorQueryParams': ['hrr'],
-        'fantasyQueryParams': ['fnt']
+        'providersQueryParams': ['nfx', 'prv', 'skg', 'pmp', 'rai', 'inf'], # 'Netflix', 'Amazon Prime Video', 'Sky Go', 'Paramount Plus', 'Rai Play', 'Infinity'
+        'genresQueryParams': {
+            'comedy': ['cmy', 'eur', 'fml', 'rma'],
+            'action&Adventure': ['act'],
+            'historical&War': ['hst', 'war'],
+            'crime&Thriller': ['crm', 'trl'],
+            'scifi': ['scf'],
+            'horror': ['hrr'],
+            'fantasy': ['fnt']
+        }
     }
 }
 

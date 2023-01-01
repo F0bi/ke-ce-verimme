@@ -3,14 +3,14 @@ import requests, bs4
 from selenium import webdriver
 import time
 
-def createComedyURL(baseQueryURL, comedyQueryParams):
-    comedyParams = ''
-    for param in comedyQueryParams:
-        comedyParams = comedyParams + param + ','
-    comedyParams = comedyParams[:-1] # remove last comma    
-    comedyURL = baseQueryURL.replace('placeholder', comedyParams)
-    print('comedyURL: ', comedyURL)
-    return comedyURL
+def createGenrePageURL(baseQueryURL, genreQueryParams):
+    genreParams = ''
+    for param in genreQueryParams:
+        genreParams = genreParams + param + ','
+    genreParams = genreParams[:-1] # remove last comma    
+    genreURL = baseQueryURL.replace('placeholder', genreParams)
+    # print('genreURL: ', genreURL)
+    return genreURL
 
 def createBaseURL(justwatchBaseURL, providersQueryParams):
     baseURL = justwatchBaseURL + '/it?genres=placeholder&providers='
@@ -21,7 +21,7 @@ def createBaseURL(justwatchBaseURL, providersQueryParams):
     # print('baseURL: ', baseURL)
     return baseURL
 
-def getGenrePaths(pageSource):
+def getGenrePageDataPaths(pageSource):
     # generate page DOM structure from string format
     htmlPage = bs4.BeautifulSoup(pageSource, 'html.parser')
     # print('comedy html page 1: ', htmlPage)
@@ -38,7 +38,7 @@ def getGenrePaths(pageSource):
     
     return genrePaths
 
-def scrollPageToTheEnd(genreURL):
+def scrollGenrePageToTheEnd(genreURL):
     browser = webdriver.Chrome()
     browser.get(genreURL)
 
@@ -52,7 +52,7 @@ def scrollPageToTheEnd(genreURL):
             match=True
     return browser.page_source        
 
-def getGenreRawData(justwatchBaseURL, genrePaths):
+def getGenrePageData(justwatchBaseURL, genrePaths):
     finalData = []
     singleDataItem = {
         "img": None,
@@ -61,12 +61,13 @@ def getGenreRawData(justwatchBaseURL, genrePaths):
         "provider": None,
     }
 
+    i = 0
     for path in genrePaths:
         res = requests.Response()
         trycnt = 3  # max try cnt
         while trycnt > 0:
             try:
-                print('final Page URL: ', justwatchBaseURL + path)
+                # print('final Page URL: ', justwatchBaseURL + path)
                 # get html page content as string
                 res = requests.get(justwatchBaseURL + path)
                 trycnt = 0 # success
@@ -99,15 +100,19 @@ def getGenreRawData(justwatchBaseURL, genrePaths):
             spanTag = pTag.contents[0] # type: ignore
             singleDataItem["description"] = spanTag.text.strip() # type: ignore
         # provider
-        pictureTag = htmlPage.find('picture', class_='provider-icon')
-        if pictureTag is None:
+        divTag = htmlPage.find('div', class_='price-comparison__grid__row price-comparison__grid__row--stream price-comparison__grid__row--block')
+        if divTag is None:
             singleDataItem["provider"] = 'Non presente' # type: ignore
-        else:    
-            imgTag = pictureTag.contents[1] # type: ignore
+        else:
+            imgTag = divTag.find('img') # type: ignore
             singleDataItem["provider"] = imgTag['title'] # type: ignore
-        # check
-        # print('singleDataItem: ', singleDataItem)
         # add item
+        # if (singleDataItem["title"] == singleDataItem["description"] == singleDataItem["provider"] == 'Non presente'):
+        #    continue # current for iteration skip
+        # check
+        i = i + 1
+        print(i, ' ', path, ' ', singleDataItem["title"], ' ', singleDataItem["provider"])
+
         finalData.append(singleDataItem)
 
     return finalData    
@@ -116,21 +121,19 @@ def getGenreRawData(justwatchBaseURL, genrePaths):
 def start(justwatchScaperSettings):
     # extract scraper settings
     justwatchBaseURL = justwatchScaperSettings['url']
-    providersIdentifierToAnalyze = justwatchScaperSettings['providersIdentifierToAnalyze']
     providersQueryParams = justwatchScaperSettings['providersQueryParams']
-    comedyQueryParams = justwatchScaperSettings['comedyQueryParams']
-    actionAndAdventureQueryParams = justwatchScaperSettings['actionAndAdventureQueryParams']
-    historicalAndWarQueryParams = justwatchScaperSettings['historicalAndWarQueryParams']
-    crimeAndThrillerQueryParams = justwatchScaperSettings['crimeAndThrillerQueryParams']
-    scifiQueryParams = justwatchScaperSettings['scifiQueryParams']
-    horrorQueryParams = justwatchScaperSettings['horrorQueryParams']
-    fantasyQueryParams = justwatchScaperSettings['fantasyQueryParams']
-  
+    genresQueryParams = justwatchScaperSettings['genresQueryParams']
+    #
     baseURL = createBaseURL(justwatchBaseURL, providersQueryParams)
-    comedyURL = createComedyURL(baseURL, comedyQueryParams)
-    scrolledPage = scrollPageToTheEnd(comedyURL)
-    genrePaths = getGenrePaths(scrolledPage)
-    genreRawData = getGenreRawData(justwatchBaseURL, genrePaths)
+    #
+    result = {}
+    # for genreKey in genresQueryParams:
+    # print('genre: ', genreKey)
+    # genrePageURL = createGenrePageURL(baseURL, genresQueryParams[genreKey])
+    genrePageURL = createGenrePageURL(baseURL, genresQueryParams['comedy'])
+    scrolledGenrePage = scrollGenrePageToTheEnd(genrePageURL)
+    genrePageDataPaths = getGenrePageDataPaths(scrolledGenrePage)
+    result['comedy'] = getGenrePageData(justwatchBaseURL, genrePageDataPaths)
+    
 
-    # print('PIPPO: ', genreRawData)
-        
+    # print('result: ', result)
