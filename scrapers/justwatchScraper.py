@@ -38,18 +38,26 @@ def getGenrePageDataPaths(pageSource):
     return genrePaths
 
 def scrollGenrePageToTheEnd(genreURL):
-    browser = webdriver.Chrome()
-    browser.get(genreURL)
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('androidPackage', 'com.android.chrome')
+    driver = webdriver.Chrome('./chromedriver', options=options)
+    #driver.get('https://google.com')
+    #driver.quit()
 
-    lenOfPage = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+
+
+    # driver = webdriver.Chrome()
+    driver.get(genreURL)
+
+    lenOfPage = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
     match=False
     while(match==False):
         lastCount = lenOfPage
         time.sleep(3)
-        lenOfPage = browser.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+        lenOfPage = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
         if lastCount==lenOfPage:
             match=True
-    return browser.page_source        
+    return driver.page_source        
     url = 'https://free-proxy-list.net/'
     response = requests.Response()
     trycnt = 3  # max try cnt
