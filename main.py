@@ -16,19 +16,19 @@ scrapersSetting = {
         'url': 'https://www.justwatch.com',
         'providersQueryParams': ['nfx', 'prv', 'skg', 'pmp', 'rai', 'inf'], # 'Netflix', 'Amazon Prime Video', 'Sky Go', 'Paramount Plus', 'Rai Play', 'Infinity'
         'genresQueryParams': {
-            'commedie': ['cmy', 'eur', 'fml', 'rma'],
-            'azione e avventura': ['act'],
-            'storici e guerra': ['hst', 'war'],
-            'crime e Thriller': ['crm', 'trl'],
-            'scifi': ['scf'],
+#            'commedie': ['cmy', 'eur', 'fml', 'rma'],
+#            'azione e avventura': ['act'],
+#            'storici e guerra': ['hst', 'war'],
+#            'crime e Thriller': ['crm', 'trl'],
+#            'scifi': ['scf'],
             'horror': ['hrr'],
-            'fantasy': ['fnt']
+#            'fantasy': ['fnt']
         }
     }
 }
 
 def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult, justwatchScraperResult):
-    htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
+    htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><style>.pay-per-view-icon { width: 50px; height: 50px; border-radius: 20%; vertical-align: middle; }</style><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
     htmlPageStartBody = "<body><div class='container'>"
     
     # stasera in tv section ::::::::::::::::::::::
@@ -63,7 +63,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
 
     # justwatch section :::::::::::::::::::::::::::::
-    htmlPageJustwatchBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>PAY PER VIEW</h2><hr>"
+    htmlPageJustwatchBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>Pay Per View</h2><div style='width=100%;margin:auto;'><img class='pay-per-view-icon' src='https://www.justwatch.com/images/icon/52449861/s100'><img src='https://www.justwatch.com/images/icon/207360008/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/79172280/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/3414956/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/87462522/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/242706661/s100' class='pay-per-view-icon'></div><hr>"
     htmlPageJustwatchContentBody = ""
     for genreName in justwatchScraperResult:
         htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "<h3>" + genreName + "</h3><ul class='scroll-snap-slider -multi'>"

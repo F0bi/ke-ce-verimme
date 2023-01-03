@@ -120,12 +120,15 @@ def getGenrePageData(justwatchBaseURL, genrePaths):
         else:    
             singleDataItem["title"] = h1Tag.text.strip() # type: ignore
         # description
+        MAX_DESCRIPTION_LEN = 270
         pTag = htmlPage.find('p', class_='text-wrap-pre-line mt-0')
         if pTag is None:
             singleDataItem['description'] = 'Non presente' # type: ignore
         else: 
             spanTag = pTag.contents[0] # type: ignore
             singleDataItem["description"] = spanTag.text.strip() # type: ignore
+            if len(singleDataItem["description"]) >= MAX_DESCRIPTION_LEN:
+                singleDataItem["description"] = singleDataItem["description"][0:MAX_DESCRIPTION_LEN+1] + '...' # type: ignore
         # provider
         divTag = htmlPage.find('div', class_='price-comparison__grid__row price-comparison__grid__row--stream price-comparison__grid__row--block')
         if divTag is None:
