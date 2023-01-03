@@ -1,6 +1,5 @@
-import requests, bs4
+import requests, bs4, time, os
 from selenium import webdriver
-import time
 
 def createGenrePageURL(baseQueryURL, genreQueryParams):
     genreParams = ''
@@ -38,9 +37,10 @@ def getGenrePageDataPaths(pageSource):
     return genrePaths
 
 def scrollGenrePageToTheEnd(genreURL):
+    path_to_chromedriver = os.path.dirname(__file__) + './chromedriver'
     options = webdriver.ChromeOptions()
     options.add_experimental_option('androidPackage', 'com.android.chrome')
-    driver = webdriver.Chrome('./chromedriver', options=options)
+    driver = webdriver.Chrome(path_to_chromedriver, options=options)
     #driver.get('https://google.com')
     #driver.quit()
 
