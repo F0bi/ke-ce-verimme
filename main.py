@@ -16,10 +16,10 @@ scrapersSetting = {
         'url': 'https://www.justwatch.com',
         'providersQueryParams': ['nfx', 'prv', 'skg', 'pmp', 'rai', 'inf'], # 'Netflix', 'Amazon Prime Video', 'Sky Go', 'Paramount Plus', 'Rai Play', 'Infinity'
         'genresQueryParams': {
-            'comedy': ['cmy', 'eur', 'fml', 'rma'],
-            'action&Adventure': ['act'],
-            'historical&War': ['hst', 'war'],
-            'crime&Thriller': ['crm', 'trl'],
+            'commedie': ['cmy', 'eur', 'fml', 'rma'],
+            'azione e avventura': ['act'],
+            'storici e guerra': ['hst', 'war'],
+            'crime e Thriller': ['crm', 'trl'],
             'scifi': ['scf'],
             'horror': ['hrr'],
             'fantasy': ['fnt']
@@ -27,11 +27,11 @@ scrapersSetting = {
     }
 }
 
-def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult):
+def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult, justwatchScraperResult):
     htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
     htmlPageStartBody = "<body><div class='container'>"
     
-    # stasera in tv section
+    # stasera in tv section ::::::::::::::::::::::
     htmlPageStaseraInTv1SerataBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>Stasera in TV</h2><hr><h3>Prima serata</h3><ul class='scroll-snap-slider -multi'>"
     htmlPageStaseraInTv1SerataContentBody = ""
     index1Serata = 0
@@ -51,7 +51,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
         index2Serata = index2Serata + 2
     htmlPageStaseraInTv2SerataContentBody = htmlPageStaseraInTv2SerataContentBody + "</ul></section>"
     
-    # cb01 section
+    # cb01 section ::::::::::::::::::::::::::::::::.
     htmlPageCb01Body = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>CB01</h2><hr><ul class='scroll-snap-slider -multi'>"
     htmlPageCb01ContentBody = ""
     index = 0
@@ -61,6 +61,19 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
         htmlPageCb01ContentBody = htmlPageCb01ContentBody + doubleLiTag
         index = index + 2
     htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
+
+    # justwatch section :::::::::::::::::::::::::::::
+    htmlPageJustwatchBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>PAY PER VIEW</h2><hr>"
+    htmlPageJustwatchContentBody = ""
+    for genreName in justwatchScraperResult:
+        htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "<h3>" + genreName + "</h3><ul class='scroll-snap-slider -multi'>"
+        index = 0
+        for genreItem in justwatchScraperResult[genreName]:
+            doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + genreItem['img'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + genreItem['title'] + "</b></p><p>" + genreItem['provider'] + "</p><p>" + genreItem['description'] + "</p></article></li>"
+            htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + doubleLiTag
+            index = index + 2
+        htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</ul>"
+    htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</section>"        
     
     # add here other sections
 
@@ -68,7 +81,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     htmlPageCloseTags = "</div></body></html>"
 
     # final html page composition
-    finalHtmlPageTags = htmlPageHead + htmlPageStartBody + htmlPageStaseraInTv1SerataBody + htmlPageStaseraInTv1SerataContentBody + htmlPageStaseraInTv2SerataBody + htmlPageStaseraInTv2SerataContentBody + htmlPageCb01Body + htmlPageCb01ContentBody + htmlPageCloseTags
+    finalHtmlPageTags = htmlPageHead + htmlPageStartBody + htmlPageStaseraInTv1SerataBody + htmlPageStaseraInTv1SerataContentBody + htmlPageStaseraInTv2SerataBody + htmlPageStaseraInTv2SerataContentBody + htmlPageCb01Body + htmlPageCb01ContentBody + htmlPageJustwatchBody + htmlPageJustwatchContentBody + htmlPageCloseTags
     
     # html file management
     file = open(summaryPageName, 'a', encoding="utf-8")
@@ -108,10 +121,10 @@ _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(scrapersSetting['staseraInTv'])
 cb01ScraperResult = cb01Scraper.start(scrapersSetting['cb01'])
-justwatchScraperResult = justwatchScraper.start(scrapersSetting['justwatch']) 
+justwatchScraperResult = justwatchScraper.start(scrapersSetting['justwatch'])
 # add here other web site scraper
 
-summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
+summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult, justwatchScraperResult)
 
 webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 

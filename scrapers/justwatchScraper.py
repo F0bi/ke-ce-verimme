@@ -1,4 +1,3 @@
-import json
 import requests, bs4
 from selenium import webdriver
 import time
@@ -51,34 +50,62 @@ def scrollGenrePageToTheEnd(genreURL):
         if lastCount==lenOfPage:
             match=True
     return browser.page_source        
+    url = 'https://free-proxy-list.net/'
+    response = requests.Response()
+    trycnt = 3  # max try cnt
+    while trycnt > 0:
+        try:
+            response = requests.get('https://free-proxy-list.net/')
+            print('response: ', response.status_code, response.text)
+            trycnt = 0 # success
+        except requests.HTTPError as exc:
+            if trycnt <= 0: 
+                print("Failed to retrieve proxies from: " + url + "\n" + str(exc))  # done retrying
+            else:
+                print("proxie ELSE")
+                trycnt -= 1  # retry
+                time.sleep(0.5)  # wait 1/2 second then retry
+
+    parser = fromstring(response.text)
+    proxies = set()
+    for i in parser.xpath('//tbody/tr')[:10]:
+        if i.xpath('.//td[7][contains(text(),"yes")]'):
+            #Grabbing IP and corresponding PORT
+            proxy = ":".join([i.xpath('.//td[1]/text()')[0], i.xpath('.//td[2]/text()')[0]])
+            proxies.add(proxy)
+    return proxies
 
 def getGenrePageData(justwatchBaseURL, genrePaths):
     finalData = []
-    singleDataItem = {
-        "img": None,
-        "title": None,
-        "description": None,
-        "provider": None,
-    }
-
     i = 0
     for path in genrePaths:
+        singleDataItem = {
+            "img": None,
+            "title": None,
+            "description": None,
+            "provider": None,
+        }
         res = requests.Response()
         trycnt = 3  # max try cnt
         while trycnt > 0:
             try:
-                # print('final Page URL: ', justwatchBaseURL + path)
                 # get html page content as string
                 res = requests.get(justwatchBaseURL + path)
+                res.raise_for_status()
                 trycnt = 0 # success
-            except Exception as exc:
-                if trycnt <= 0: print("Failed to retrieve: " + path + "\n" + str(exc))  # done retrying
-                else: trycnt -= 1  # retry
-                time.sleep(0.5)  # wait 1/2 second then retry
+            except requests.HTTPError as exc:
+                if trycnt <= 0: 
+                    print("Failed to retrieve: " + path + "\n" + str(exc))  # done retrying
+                else:
+                    trycnt -= 1  # retry
+                    if res.status_code == 429: # to many requests
+                        time.sleep(5)  # wait 4 seconds then retry
+                    else:  
+                        time.sleep(0.5)  # wait 1/2 second then retry
         # go to next URL
 
         # generate page DOM structure from string format
-        htmlPage = bs4.BeautifulSoup(res.text, 'html.parser')
+        htmlPage = bs4.BeautifulSoup(res.text, 'html.parser') # type: ignore
         # img
         pictureTag = htmlPage.find('picture', class_='picture-comp title-poster__image')
         if pictureTag is None:
@@ -106,14 +133,11 @@ def getGenrePageData(justwatchBaseURL, genrePaths):
         else:
             imgTag = divTag.find('img') # type: ignore
             singleDataItem["provider"] = imgTag['title'] # type: ignore
-        # add item
-        # if (singleDataItem["title"] == singleDataItem["description"] == singleDataItem["provider"] == 'Non presente'):
-        #    continue # current for iteration skip
         # check
         i = i + 1
-        print(i, ' ', path, ' ', singleDataItem["title"], ' ', singleDataItem["provider"])
-
-        finalData.append(singleDataItem)
+        print(i, ' ', path, ' ', res, ' ', singleDataItem["title"], ' ', singleDataItem["provider"])
+         # add item
+        finalData.append(singleDataItem) 
 
     return finalData    
 
@@ -127,13 +151,12 @@ def start(justwatchScaperSettings):
     baseURL = createBaseURL(justwatchBaseURL, providersQueryParams)
     #
     result = {}
-    # for genreKey in genresQueryParams:
-    # print('genre: ', genreKey)
-    # genrePageURL = createGenrePageURL(baseURL, genresQueryParams[genreKey])
-    genrePageURL = createGenrePageURL(baseURL, genresQueryParams['comedy'])
-    scrolledGenrePage = scrollGenrePageToTheEnd(genrePageURL)
-    genrePageDataPaths = getGenrePageDataPaths(scrolledGenrePage)
-    result['comedy'] = getGenrePageData(justwatchBaseURL, genrePageDataPaths)
-    
+    for genreKey in genresQueryParams:
+        print('genre: ', genreKey)
+        genrePageURL = createGenrePageURL(baseURL, genresQueryParams[genreKey])
+        scrolledGenrePage = scrollGenrePageToTheEnd(genrePageURL)
+        genrePageDataPaths = getGenrePageDataPaths(scrolledGenrePage)
+        result[genreKey] = getGenrePageData(justwatchBaseURL, genrePageDataPaths)
 
     # print('result: ', result)
+    return result
