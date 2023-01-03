@@ -40,9 +40,12 @@ def getGenrePageDataPaths(pageSource):
 def scrollGenrePageToTheEnd(genreURL):
     path_to_chromedriver = os.path.dirname(__file__) + '/chromedriver'
     print('path_to_chromedriver: ', path_to_chromedriver)
+    service = Service(path_to_chromedriver)
     options = webdriver.ChromeOptions()
     options.add_experimental_option('androidPackage', 'com.android.chrome')
-    driver = webdriver.Chrome(service=Service(path_to_chromedriver), options=options)
+    options.add_argument("--headless")
+    options.add_argument('--log-level=1')
+    driver = webdriver.Chrome(service=service, options=options)
     #driver.get('https://google.com')
     #driver.quit()
 
