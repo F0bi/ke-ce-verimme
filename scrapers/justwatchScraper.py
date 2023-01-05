@@ -1,6 +1,5 @@
 import requests, bs4, time, os
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 
 def createGenrePageURL(baseQueryURL, genreQueryParams):
     genreParams = ''
@@ -39,14 +38,20 @@ def getGenrePageDataPaths(pageSource):
 
 def scrollGenrePageToTheEnd(genreURL):
     # for future support of Selenium on Android via Pydroid
-    # path_to_chromedriver = os.path.dirname(__file__) + '/chromedriver'
-    # print('path_to_chromedriver: ', path_to_chromedriver)
+    path_to_chromedriver = os.path.dirname(__file__) + '/chromedriver'
+    print('path_to_chromedriver: ', path_to_chromedriver)
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('androidPackage', 'com.android.chrome')
+    driver = webdriver.Chrome(path_to_chromedriver, 0, options=options)
+    driver.get('https://google.com')
+    driver.quit()
+
     # service = Service(path_to_chromedriver)
     # options = webdriver.ChromeOptions()
     # options.add_experimental_option('androidPackage', 'com.android.chrome')
     # driver = webdriver.Chrome(service=service, options=options)
-    driver = webdriver.Chrome()
-
+    
+    # driver = webdriver.Chrome() # from desktop
     driver.get(genreURL)
 
     lenOfPage = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
@@ -58,30 +63,6 @@ def scrollGenrePageToTheEnd(genreURL):
         if lastCount==lenOfPage:
             match=True
     return driver.page_source        
-    url = 'https://free-proxy-list.net/'
-    response = requests.Response()
-    trycnt = 3  # max try cnt
-    while trycnt > 0:
-        try:
-            response = requests.get('https://free-proxy-list.net/')
-            print('response: ', response.status_code, response.text)
-            trycnt = 0 # success
-        except requests.HTTPError as exc:
-            if trycnt <= 0: 
-                print("Failed to retrieve proxies from: " + url + "\n" + str(exc))  # done retrying
-            else:
-                print("proxie ELSE")
-                trycnt -= 1  # retry
-                time.sleep(0.5)  # wait 1/2 second then retry
-
-    parser = fromstring(response.text)
-    proxies = set()
-    for i in parser.xpath('//tbody/tr')[:10]:
-        if i.xpath('.//td[7][contains(text(),"yes")]'):
-            #Grabbing IP and corresponding PORT
-            proxy = ":".join([i.xpath('.//td[1]/text()')[0], i.xpath('.//td[2]/text()')[0]])
-            proxies.add(proxy)
-    return proxies
 
 def getGenrePageData(justwatchBaseURL, genrePaths):
     finalData = []
