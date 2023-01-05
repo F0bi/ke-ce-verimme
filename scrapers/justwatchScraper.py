@@ -1,5 +1,6 @@
 import requests, bs4, time, os
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 def createGenrePageURL(baseQueryURL, genreQueryParams):
     genreParams = ''
@@ -40,11 +41,12 @@ def scrollGenrePageToTheEnd(genreURL):
     # for future support of Selenium on Android via Pydroid
     path_to_chromedriver = os.path.dirname(__file__) + '/chromedriver'
     print('path_to_chromedriver: ', path_to_chromedriver)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option('androidPackage', 'com.android.chrome')
-    driver = webdriver.Chrome(path_to_chromedriver, 0, options=options)
-    driver.get('https://google.com')
-    driver.quit()
+    op = Options()
+    op.binary_location(path_to_chromedriver) # type: ignore
+    op.add_argument('--no-sandbox')
+    # If you are not having a desktop environment or x windows system use headless
+    op.add_argument('--headless')
+    driver = webdriver.Chrome(options=op)
 
     # service = Service(path_to_chromedriver)
     # options = webdriver.ChromeOptions()
