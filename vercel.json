@@ -1,6 +1,6 @@
 {
   "crons": [{
-    "path": "./main.py",
+    "path": "./cron.js",
     "schedule": "15 16 * * * python3 ./main.py"
   }]
 }
