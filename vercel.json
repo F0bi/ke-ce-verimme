@@ -1,6 +1,6 @@
 {
   "crons": [{
     "path": "/cron",
-    "schedule": "0 16 * * * python3 ./main.py"
+    "schedule": "15 16 * * * python3 ./main.py"
   }]
 }
