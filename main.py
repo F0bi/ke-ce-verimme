@@ -5,7 +5,7 @@ from http.server import HTTPServer, CGIHTTPRequestHandler
 summaryPageName = 'index.html'
 urlsToScrape = {
     'staseraInTvURL': 'https://www.staseraintv.com',
-    'cb01URL': 'https://cb01.tours'
+    'cb01URL': 'https://cb01.nagoya'
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
 
