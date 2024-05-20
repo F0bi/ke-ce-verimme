@@ -2,7 +2,7 @@ name: Python Script Workflow
 
 on:
   schedule:
-  - cron: "36 15 * * *"
+  - cron: "55 21 * * *"
   workflow_dispatch:
 
 jobs:
@@ -25,3 +25,13 @@ jobs:
 
       - name: Execute Python script # Run the app.py
         run: python -v main.py
+
+      - name: update file and push to remote
+        run: |
+          echo "Test push commit to the remote in the workflow" >> test.txt
+          git config --global user.name "F0bi"
+          git config --global user.email "fabiocozzolinomail@gmail.com"
+
+          git add -A
+          git commit -m "Update index.html"
+          git push
