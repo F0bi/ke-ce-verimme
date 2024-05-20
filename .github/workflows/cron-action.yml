@@ -2,7 +2,7 @@ name: Python Script Workflow
 
 on:
   schedule:
-  - cron: "*/30 * * * *"
+  - cron: "0 */1 * * *"
   workflow_dispatch:
 
 jobs:
@@ -31,5 +31,5 @@ jobs:
           git config --global user.name "F0bi"
           git config --global user.email "fabiocozzolinomail@gmail.com"
           git add -A
-          git commit -m "Update index.html"
+          git commit -m "Automated commit: generated new index.html" || exit 0
           git push
