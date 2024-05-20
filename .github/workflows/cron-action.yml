@@ -3,6 +3,7 @@ name: Python Script Workflow
 on:
   schedule:
   - cron: "36 15 * * *"
+  workflow_dispatch:
 
 jobs:
   build:
