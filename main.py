@@ -57,6 +57,7 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     file.write(finalHtmlPageTags)
     file.close()
 
+
 def start_server():    
     # Make sure the server is created at current directory
     os.chdir(os.getcwd())
@@ -86,7 +87,7 @@ try:
 except OSError:
     pass
 
-_thread.start_new_thread(start_server,())
+# _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
 cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
@@ -94,15 +95,15 @@ cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAn
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
-webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
+# webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
 # A thread continues to exist as long as the application continues to run, 
 # in the case webbrowser.open_new() is not blocking so the browser 
 # will hardly finish running the application, what you should do is make 
 # a blocker to prevent the application finish of execute.
 # So if the script finishes executing it will eliminate all its resources as the created threads.
-while True:
-    try:
-        time.sleep(1)
-    except KeyboardInterrupt:
-        sys.exit(0)
+#while True:
+#    try:
+#        time.sleep(1)
+#    except KeyboardInterrupt:
+#        sys.exit(0)
