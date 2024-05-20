@@ -24,4 +24,4 @@ jobs:
           path: "requirements.txt"
 
       - name: Execute Python script # Run the app.py
-        run: python --versiom
+        run: python --version
