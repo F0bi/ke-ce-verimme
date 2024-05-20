@@ -1,2 +1,2 @@
 # ke-ce-verimme
-an idea... ooo
+an idea... oo
