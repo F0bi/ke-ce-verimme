@@ -9,7 +9,7 @@ scrapersSetting = {
         'numberOfPagesToAnalyze': 3, # first 3 pages
     },
     'cb01': {
-        'url': 'https://cb01.tours',
+        'url': 'https://cb01.nagoya',
         'numberOfPagesToAnalyze': 3, # first 3 pages
     },
     'justwatch': {
