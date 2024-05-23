@@ -1,6 +1,7 @@
 from warnings import catch_warnings
 import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, webbrowser, os, _thread, time, sys
 from http.server import HTTPServer, CGIHTTPRequestHandler
+from sys import platform
 
 summaryPageName = 'index.html'
 urlsToScrape = {
@@ -57,7 +58,6 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     file.write(finalHtmlPageTags)
     file.close()
 
-
 def start_server():    
     # Make sure the server is created at current directory
     os.chdir(os.getcwd())
@@ -73,6 +73,27 @@ def isUrlReachable(url):
     except Exception:
         return False
 
+def getPlatformName():
+    # On Android sys.platform returns 'linux', so prefer to check the
+    # presence of python-for-android environment variables which start
+    # with the prefix 'ANDROID_'.
+    
+    for key in os.environ:
+        if key.startswith('ANDROID_'):
+            return 'android'
+
+    if os.environ.get('KIVY_BUILD', '') == 'ios':
+        return 'ios'
+    elif platform in ('win32', 'cygwin'):
+        return 'win'
+    elif platform == 'darwin':
+        return 'macosx'
+    elif platform.startswith('linux'):
+        return 'linux'
+    elif platform.startswith('freebsd'):
+        return 'linux'
+    return 'unknown'
+
 # START
 
 # check reachability of URLs of each page to scrape
@@ -87,7 +108,8 @@ try:
 except OSError:
     pass
 
-# _thread.start_new_thread(start_server,())
+if getPlatformName() == 'android':
+    _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
 cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
@@ -95,15 +117,16 @@ cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAn
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
-# webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
+if getPlatformName() == 'android':
+    webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
-# A thread continues to exist as long as the application continues to run, 
-# in the case webbrowser.open_new() is not blocking so the browser 
-# will hardly finish running the application, what you should do is make 
-# a blocker to prevent the application finish of execute.
-# So if the script finishes executing it will eliminate all its resources as the created threads.
-#while True:
-#    try:
-#        time.sleep(1)
-#    except KeyboardInterrupt:
-#        sys.exit(0)
+    # A thread continues to exist as long as the application continues to run, 
+    # in the case webbrowser.open_new() is not blocking so the browser 
+    # will hardly finish running the application, what you should do is make 
+    # a blocker to prevent the application finish of execute.
+    # So if the script finishes executing it will eliminate all its resources as the created threads.
+    while True:
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            sys.exit(0)
