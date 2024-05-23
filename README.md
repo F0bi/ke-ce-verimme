@@ -1,2 +1,5 @@
 # ke-ce-verimme
-an idea... ooo
+an idea... oo
+
+# contribution
+pip3 freeze > requirements.txt

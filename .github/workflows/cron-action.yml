@@ -1,0 +1,35 @@
+name: Python Script Workflow
+
+on:
+  schedule:
+  - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository content
+        uses: actions/checkout@v2 # Checkout the repository content to github runner.
+
+      - name: Setup Python Version
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12 # Install the python version needed
+
+      - name: Install Python dependencies
+        uses: py-actions/py-dependency-install@v2
+        with:
+          path: "requirements.txt"
+
+      - name: Execute Python script # Run the app.py
+        run: python -v main.py
+
+      - name: update file and push to remote
+        run: |
+          git config --global user.name "F0bi"
+          git config --global user.email "fabiocozzolinomail@gmail.com"
+          git add -A
+          git commit -m "Automated commit: generated new index.html" || exit 0
+          git push

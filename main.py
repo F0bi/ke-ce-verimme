@@ -1,6 +1,7 @@
 from warnings import catch_warnings
 import requests, scrapers.staseraInTvScraper as staseraInTvScraper, scrapers.cb01Scraper as cb01Scraper, scrapers.justwatchScraper as justwatchScraper, webbrowser, os, _thread, time, sys
 from http.server import HTTPServer, CGIHTTPRequestHandler
+from sys import platform
 
 summaryPageName = 'index.html'
 scrapersSetting = {
@@ -63,18 +64,21 @@ def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01Scraper
     htmlPageCb01ContentBody = htmlPageCb01ContentBody + "</ul></section>"
 
     # justwatch section :::::::::::::::::::::::::::::
-    htmlPageJustwatchBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>Pay Per View</h2><div style='width=100%;margin:auto;'><img class='pay-per-view-icon' src='https://www.justwatch.com/images/icon/52449861/s100'><img src='https://www.justwatch.com/images/icon/207360008/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/79172280/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/3414956/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/87462522/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/242706661/s100' class='pay-per-view-icon'></div><hr>"
-    htmlPageJustwatchContentBody = ""
-    for genreName in justwatchScraperResult:
-        htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "<h3>" + genreName + "</h3><ul class='scroll-snap-slider -multi'>"
-        index = 0
-        for genreItem in justwatchScraperResult[genreName]:
-            doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + genreItem['img'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + genreItem['title'] + "</b></p><p>" + genreItem['provider'] + "</p><p>" + genreItem['description'] + "</p></article></li>"
-            htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + doubleLiTag
-            index = index + 2
-        htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</ul>"
-    htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</section>"        
-    
+    if justwatchScraperResult != []:
+        htmlPageJustwatchBody = "<section class='column' aria-labelledby='multiple-heading'><hr><h2 id='multiple-heading'>Pay Per View</h2><div style='width=100%;margin:auto;'><img class='pay-per-view-icon' src='https://www.justwatch.com/images/icon/52449861/s100'><img src='https://www.justwatch.com/images/icon/207360008/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/79172280/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/3414956/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/87462522/s100' class='pay-per-view-icon'><img src='https://images.justwatch.com/icon/242706661/s100' class='pay-per-view-icon'></div><hr>"
+        htmlPageJustwatchContentBody = ""
+        for genreName in justwatchScraperResult:
+            htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "<h3>" + genreName + "</h3><ul class='scroll-snap-slider -multi'>"
+            index = 0
+            for genreItem in justwatchScraperResult[genreName]:
+                doubleLiTag = "<li class='scroll-snap-slide' data-index='"+ str(index) +"'><img height='300' src=" + genreItem['img'] + " width='400'></li><li class='scroll-snap-slide' data-index='" + str(index+1) + "'><article><p><b>" + genreItem['title'] + "</b></p><p>" + genreItem['provider'] + "</p><p>" + genreItem['description'] + "</p></article></li>"
+                htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + doubleLiTag
+                index = index + 2
+            htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</ul>"
+        htmlPageJustwatchContentBody = htmlPageJustwatchContentBody + "</section>"        
+    else: 
+        htmlPageJustwatchBody = htmlPageJustwatchContentBody = ''
+
     # add here other sections
 
     # html page body closing
@@ -103,6 +107,27 @@ def isUrlReachable(url):
     except Exception:
         return False
 
+def getPlatformName():
+    # On Android sys.platform returns 'linux', so prefer to check the
+    # presence of python-for-android environment variables which start
+    # with the prefix 'ANDROID_'.
+    
+    for key in os.environ:
+        if key.startswith('ANDROID_'):
+            return 'android'
+
+    if os.environ.get('KIVY_BUILD', '') == 'ios':
+        return 'ios'
+    elif platform in ('win32', 'cygwin'):
+        return 'win'
+    elif platform == 'darwin':
+        return 'macosx'
+    elif platform.startswith('linux'):
+        return 'linux'
+    elif platform.startswith('freebsd'):
+        return 'linux'
+    return 'unknown'
+
 # START
 
 # check reachability of URLs of each page to scrape
@@ -117,24 +142,29 @@ try:
 except OSError:
     pass
 
-_thread.start_new_thread(start_server,())
+if getPlatformName() == 'android':
+    _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(scrapersSetting['staseraInTv'])
 cb01ScraperResult = cb01Scraper.start(scrapersSetting['cb01'])
-justwatchScraperResult = justwatchScraper.start(scrapersSetting['justwatch'])
+if getPlatformName() != 'android': # necessary because on Android Selenium doesn't work (for now)
+    justwatchScraperResult = justwatchScraper.start(scrapersSetting['justwatch'])
+else:
+    justwatchScraperResult = []
 # add here other web site scraper
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult, justwatchScraperResult)
 
-webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
+if getPlatformName() == 'android':
+    webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
-# A thread continues to exist as long as the application continues to run, 
-# in the case webbrowser.open_new() is not blocking so the browser 
-# will hardly finish running the application, what you should do is make 
-# a blocker to prevent the application finish of execute.
-# So if the script finishes executing it will eliminate all its resources as the created threads.
-while True:
-    try:
-        time.sleep(1)
-    except KeyboardInterrupt:
-        sys.exit(0)
+    # A thread continues to exist as long as the application continues to run, 
+    # in the case webbrowser.open_new() is not blocking so the browser 
+    # will hardly finish running the application, what you should do is make 
+    # a blocker to prevent the application finish of execute.
+    # So if the script finishes executing it will eliminate all its resources as the created threads.
+    while True:
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            sys.exit(0)
