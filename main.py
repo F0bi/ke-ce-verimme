@@ -95,6 +95,8 @@ def getPlatformName():
     return 'unknown'
 
 # START
+print('OS: ', getPlatformName())
+print('::::::::::::::::::::;;;;;;:;:;')
 
 # check reachability of URLs of each page to scrape
 for url in urlsToScrape.keys():
