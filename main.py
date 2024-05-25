@@ -78,9 +78,8 @@ def getPlatformName():
     # presence of python-for-android environment variables which start
     # with the prefix 'ANDROID_'.
     
-    for key in os.environ:
-        if key.startswith('ANDROID_'):
-            return 'android'
+    primt('os.environ:::::::::::::::::: ', os.environ)
+        
 
     if os.environ.get('KIVY_BUILD', '') == 'ios':
         return 'ios'
