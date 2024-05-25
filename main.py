@@ -80,8 +80,9 @@ def getPlatformName():
     
     print('os.environ:::::::::::::::::: ', os.environ)
         
-
-    if os.environ.get('KIVY_BUILD', '') == 'ios':
+    if 'ANDROID_STORAGE' in os.environ:
+        return 'android'
+    elif os.environ.get('KIVY_BUILD', '') == 'ios':
         return 'ios'
     elif platform in ('win32', 'cygwin'):
         return 'win'
@@ -109,8 +110,8 @@ try:
 except OSError:
     pass
 
-# if getPlatformName() == 'android':
-#    _thread.start_new_thread(start_server,())
+if getPlatformName() == 'android':
+    _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
 cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAnalyze)
@@ -118,16 +119,16 @@ cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAn
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
-# if getPlatformName() == 'android':
-#    webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
+if getPlatformName() == 'android':
+    webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
     # A thread continues to exist as long as the application continues to run, 
     # in the case webbrowser.open_new() is not blocking so the browser 
     # will hardly finish running the application, what you should do is make 
     # a blocker to prevent the application finish of execute.
     # So if the script finishes executing it will eliminate all its resources as the created threads.
- #   while True:
- #       try:
- #           time.sleep(1)
- #       except KeyboardInterrupt:
- #           sys.exit(0)
+    while True:
+       try:
+          time.sleep(1)
+       except KeyboardInterrupt:
+           sys.exit(0)
