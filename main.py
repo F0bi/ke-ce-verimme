@@ -94,7 +94,7 @@ def getPlatformName():
     return 'unknown'
 
 # START
-print('OS: ', getPlatformName())
+print('argv[1]: ', sys.argv[1])
 print('::::::::::::::::::::;;;;;;:;:;')
 
 # check reachability of URLs of each page to scrape
