@@ -24,7 +24,7 @@ jobs:
           path: "requirements.txt"
 
       - name: Execute Python script # Run the app.py
-        run: python -v main.py
+        run: python -v main.py web_prod
 
       - name: update file and push to remote
         run: |
