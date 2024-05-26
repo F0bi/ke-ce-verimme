@@ -9,6 +9,7 @@ urlsToScrape = {
     'cb01URL': 'https://cb01.church'
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
+env = ''
 
 def createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult):
     htmlPageHead = "<!DOCTYPE html><html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>Page Title</title><link rel='stylesheet' href='./ui/css/index.css'><script src='./ui/ScrollSnapSlider.js' type='module'></script></head>"
@@ -95,8 +96,14 @@ def getPlatformName():
     return 'unknown'
 
 # START
-print('argv[1]: ', sys.argv[1])
-print('::::::::::::::::::::;;;;;;:;:;')
+try:
+    print('argv[1]: ', sys.argv[1])
+    print('::::::::::::::::::::;;;;;;:;:;')
+    env = sys.argv[1]
+except Exception:
+    env = 'android_prod'
+    pass
+    
 
 # check reachability of URLs of each page to scrape
 for url in urlsToScrape.keys():
@@ -110,7 +117,7 @@ try:
 except OSError:
     pass
 
-if getPlatformName() == 'android':
+if env == 'android_prod' or env == 'web_dev':
     _thread.start_new_thread(start_server,())
 
 staseraInTvScraperResult = staseraInTvScraper.start(urlsToScrape['staseraInTvURL'], numberOfPagesToAnalyze)
@@ -119,7 +126,7 @@ cb01ScraperResult = cb01Scraper.start(urlsToScrape['cb01URL'], numberOfPagesToAn
 
 summaryPageFile = createSummaryHtmlFile(summaryPageName, staseraInTvScraperResult, cb01ScraperResult)
 
-if getPlatformName() == 'android':
+if env == 'android_prod' or env == 'web_dev':
     webbrowser.open('http://127.0.0.1:3600/' + summaryPageName)
 
     # A thread continues to exist as long as the application continues to run, 
