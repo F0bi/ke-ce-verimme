@@ -6,7 +6,7 @@ from sys import platform
 summaryPageName = 'index.html'
 urlsToScrape = {
     'staseraInTvURL': 'https://www.staseraintv.com',
-    'cb01URL': 'https://cb01new.party'
+    'cb01URL': 'https://cb01net.org'
 }
 numberOfPagesToAnalyze = 3 # first 3 pages
 env = ''
